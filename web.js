@@ -41,7 +41,7 @@ http.createServer(function(req, res) {
             console.log('7');
             handle_json(req, res);
         }
-    });
+    }).resume();
     console.log('8');
 }).listen(port);
 console.log('9');
