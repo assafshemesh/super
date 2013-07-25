@@ -42,8 +42,9 @@ http.createServer(function(req, res) {
             handle_json(req, res);
         }
     });
+    console.log('8');
 }).listen(port);
-console.log('node-static running at %s:%d', process.env.IP, port);
+//console.log('node-static running at %s:%d', process.env.IP, port);
 
 function handle_json(req, res) {
     res.writeHead(200, {
