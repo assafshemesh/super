@@ -1,11 +1,6 @@
-
-console.log('1');
-
 var node_static = require('node-static'),
     http = require('http');
     //util = require('util');
-    
-    console.log('2');
     
 var webroot = '.',
     port = process.env.PORT;
@@ -14,14 +9,10 @@ var file = new(node_static.Server)(webroot, {
     //headers: { 'X-Powered-By': 'node-static' }
 });
 
-console.log('3');
 
 http.createServer(function(req, res) {
-    console.log('4');
     req.addListener('end', function() {
-        console.log('5');
         if (req.url.lastIndexOf("/static/", 0) === 0) {
-            console.log('6');
             file.serve(req, res, function(err, result) {
                 if (err) {
                     console.error('Error serving %s - %s', req.url, err.message);
@@ -38,14 +29,11 @@ http.createServer(function(req, res) {
             });
         }
         else {
-            console.log('7');
             handle_json(req, res);
         }
     }).resume();
-    console.log('8');
 }).listen(port);
-console.log('9');
-//console.log('node-static running at %s:%d', process.env.IP, port);
+console.log('node-static running at %s:%d', process.env.IP, port);
 
 function handle_json(req, res) {
     res.writeHead(200, {
@@ -54,5 +42,4 @@ function handle_json(req, res) {
     res.end('Hello World from Cloud9\n');
 }
 
-console.log('10');
 
