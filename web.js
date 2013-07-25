@@ -44,6 +44,7 @@ http.createServer(function(req, res) {
     });
     console.log('8');
 }).listen(port);
+console.log('9');
 //console.log('node-static running at %s:%d', process.env.IP, port);
 
 function handle_json(req, res) {
@@ -52,3 +53,6 @@ function handle_json(req, res) {
     });
     res.end('Hello World from Cloud9\n');
 }
+
+console.log('10');
+
