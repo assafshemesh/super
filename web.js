@@ -1,7 +1,7 @@
 var node_static = require('node-static'),
     http = require('http');
-    //util = require('util');
-    
+//util = require('util');
+
 var webroot = '.',
     port = process.env.PORT;
 var file = new(node_static.Server)(webroot, {
@@ -12,24 +12,35 @@ var file = new(node_static.Server)(webroot, {
 
 http.createServer(function(req, res) {
     req.addListener('end', function() {
-        if (req.url.lastIndexOf("/static/", 0) === 0) {
-            file.serve(req, res, function(err, result) {
-                if (err) {
-                    console.error('Error serving %s - %s', req.url, err.message);
-                    //              if (err.status === 404 || err.status === 500) {
-                    //                  file.serveFile(util.format('/%d.html', err.status), err.status, {}, req, res);
-                    //              } else {
-                    res.writeHead(err.status, err.headers);
-                    res.end();
-                    //              }
-                }
-                else {
-                    console.log('%s - %s', req.url, res.message);
-                }
-            });
+        if (req.url === "/") {
+            file.serveFile("/main.html", 200, {}, req, res);
         }
         else {
-            handle_json(req, res);
+            var isStaticURL = function(url) {
+                if (url.lastIndexOf("/js/", 0) === 0) return true;
+                if (url.lastIndexOf("/css/", 0) === 0) return true;
+                return false;
+            };
+            if (isStaticURL(req.url)) {
+                console.log('serving static page: %s', req.url);
+                file.serve(req, res, function(err, result) {
+                    if (err) {
+                        console.error('Error serving %s - %s', req.url, err.message);
+                        //              if (err.status === 404 || err.status === 500) {
+                        //                  file.serveFile(util.format('/%d.html', err.status), err.status, {}, req, res);
+                        //              } else {
+                        res.writeHead(err.status, err.headers);
+                        res.end();
+                        //              }
+                    }
+                    //                    else {
+                    //                        console.log('%s - %s', req.url, res.message);
+                    //                    }
+                });
+            }
+            else {
+                handle_json(req, res);
+            }
         }
     }).resume();
 }).listen(port);
@@ -41,5 +52,3 @@ function handle_json(req, res) {
     });
     res.end('Hello World from Cloud9\n');
 }
-
-
