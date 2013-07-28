@@ -41,13 +41,13 @@
                 <!--/.nav-collapse -->
             </div>
         </div>
-        <div class="container" id="home">
-            <div class="starter-template">
-                <h1>Home</h1>
-                <div id="maindiv"></div>
-                <p class="lead">Use this document as a way to quickly start any new project.
-                    <br>All you get is this text and a mostly barebones HTML document.</p>
-            </div>
+        <div id="home">
+            
+                
+                <div id="maindiv" id="home" style="overflow: scroll;"></div>
+                
+                
+            
         </div>
         <div class="container" id="about">
             <div class="starter-template">
@@ -68,6 +68,14 @@
             $('.nav li a').click(function() {
                 var $navbar = $('.navbar-toggle');
                 if ($navbar.is(':visible')) $navbar.click();
+            });
+            
+            var $window = $(window);
+            $(function(){
+                $('#maindiv').height($window.height()-50);
+            });
+            $(window).resize(function(){
+                $('#maindiv').height($window.height()-50);
             });
 
 
