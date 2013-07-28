@@ -4,14 +4,19 @@
     <head>
         <title>SuperNavigator</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/main.css" rel="stylesheet">        
-        
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css"
+        rel="stylesheet">
+        <link href="css/main.css" rel="stylesheet">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.2.2/d3.v3.min.js"></script>
+        
+        <script src="js/data/data.js"></script>
+        <script src="js/data/products.js"></script>
+        <script src="js/Dijkstra.js"></script>
     </head>
     
-    <body>
+    <body data-spy="scroll" data-target=".nav-collapse">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
@@ -23,7 +28,7 @@
                 <div class="nav-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li class="active">
-                            <a href="#">Home</a>
+                            <a href="#home">Home</a>
                         </li>
                         <li>
                             <a href="#about">About</a>
@@ -36,14 +41,161 @@
                 <!--/.nav-collapse -->
             </div>
         </div>
-        <div class="container">
+        <div class="container" id="home">
             <div class="starter-template">
-                <h1>Bootstrap starter template</h1>
+                <h1>Home</h1>
+                <div id="maindiv"></div>
+                <p class="lead">Use this document as a way to quickly start any new project.
+                    <br>All you get is this text and a mostly barebones HTML document.</p>
+            </div>
+        </div>
+        <div class="container" id="about">
+            <div class="starter-template">
+                <h1>About</h1>
+                <p class="lead">Use this document as a way to quickly start any new project.
+                    <br>All you get is this text and a mostly barebones HTML document.</p>
+            </div>
+        </div>
+        <div class="container" id="contact">
+            <div class="starter-template">
+                <h1>Contact</h1>
                 <p class="lead">Use this document as a way to quickly start any new project.
                     <br>All you get is this text and a mostly barebones HTML document.</p>
             </div>
         </div>
         <!-- /.container -->
+        <script>
+            $('.nav li a').click(function() {
+                var $navbar = $('.navbar-toggle');
+                if ($navbar.is(':visible')) $navbar.click();
+            });
+
+
+
+            var shopping_list = ['egg', 'milk', 'tea'];
+
+
+
+            var map = {};
+            for (var i = 0; i < grid.length; i++) {
+                for (var j = 0; j < grid[i].length; j++) {
+                    var cell = new Cell(grid[i][j]);
+
+                    if (cell.type != "wall") {
+                        var node = {};
+                        node.nibr = {};
+                        node.x = j;
+                        node.y = i;
+                        //node.products=[];
+                        node.type = cell.type;
+
+                        if (j < grid[i].length - 1 && is_nibr(node.type, grid[i][j + 1])) node.nibr[position2Name(i, j + 1)] = 1;
+
+                        if (i < grid.length - 1 && is_nibr(node.type, grid[i + 1][j])) node.nibr[position2Name(i + 1, j)] = 1;
+
+                        if (j > 0 && is_nibr(node.type, grid[i][j - 1])) node.nibr[position2Name(i, j - 1)] = 1;
+
+                        if (i > 0 && is_nibr(node.type, grid[i - 1][j])) node.nibr[position2Name(i - 1, j)] = 1;
+
+                        var p = products[i][j];
+                        if (typeof(p) === 'string') {
+                            node.products = p.split(';');
+                            node.isProduct = hasProduct(node.products, shopping_list);
+                        }
+                        else {
+                            node.isProduct = false; //(grid[i][j]!==0);
+                        }
+
+                        map['i' + i + 'j' + j] = node;
+                    }
+                }
+            }
+
+            function hasProduct(node_products, list_products) {
+                for (var i = 0; i < node_products.length; i++) {
+                    if (list_products.indexOf(node_products[i]) > -1) return true;
+                }
+                return false;
+            }
+
+            function position2Name(i, j) {
+                //if (grid[i][j]===0)
+                return 'i' + i + 'j' + j;
+                //else
+                //return grid[i][j];
+            }
+
+            var graph = new Graph(map);
+            //var result = graph.findShortestPath('s', 't');
+
+            //var result2 = graph.findPathToClosest('start');
+
+            var result3 = graph.findPathToAll('i52j42');
+
+            //window.console.trace(result2);
+
+
+
+            var size = 20;
+
+            var svg = d3.select("#maindiv").append("svg").attr("width", size * grid[0].length).attr("height", size * grid.length)
+
+            //draw(grid);
+            draw_map(map);
+            drawPath(result3);
+
+            function draw(data) {
+                var rows = svg.selectAll(".row").data(data).enter().append("g").attr("class", "row").attr("transform", function(d, i) {
+                    return "translate(" + 0 + "," + i * size + ")";
+                });
+
+                var cells = rows.selectAll(".shelf .wall .passage").data(function(d) {
+                    return d;
+                }).enter().append("g")
+                //.append("rect").attr("width",20).attr("height",20)
+                .attr("class", function(d) {
+                    return cell_type(d);
+                }) //return d===0 ? "cell" : (d===1 ? "wall" : "item");})
+                .attr("transform", function(d, i) {
+                    return "translate(" + i * size + "," + 0 + ")";
+                });
+
+                cells.append("rect").attr("width", size).attr("height", size);
+
+                svg.selectAll(".shelf").append("text").text(function(d) {
+                    debugger;
+                    return d.products ? d.products.join(',') : '';
+                });
+
+            }
+
+            function draw_map(map) {
+
+                var cells = svg.selectAll(".shelf .wall .passage").data(d3.keys(map)).enter().append("g")
+                //.append("rect").attr("width",20).attr("height",20)
+                .attr("class", function(d) {
+                    return map[d].type;
+                }) //return d===0 ? "cell" : (d===1 ? "wall" : "item");})
+                .attr("transform", function(d) {
+                    return "translate(" + map[d].x * size + "," + map[d].y * size + ")";
+                });
+
+                cells.append("rect").attr("width", size).attr("height", size);
+
+                cells.append("text").text(function(d) {
+                    return map[d].products ? map[d].products.join(',') : '';
+                });
+
+            }
+
+            function drawPath(path) {
+                svg.selectAll(".path").data(path).enter().append("circle").attr("cx", function(d) {
+                    return (map[d].x + .5) * size;
+                }).attr("cy", function(d) {
+                    return (map[d].y + .5) * size;
+                }).attr("r", size / 8).attr("class", "path");
+            }
+        </script>
     </body>
 
 </html>

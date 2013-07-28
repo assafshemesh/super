@@ -1,7 +1,37 @@
 body {
-  padding-top: 50px;
+    padding-top: 50px;
 }
 .starter-template {
-  padding: 40px 15px;
-  text-align: center;
+    padding: 40px 15px;
+    text-align: center;
+}
+
+/*map staff*/
+.passage rect {
+    fill: white;
+    stroke: lightgrey;
+    overflow: visible;
+}
+.shelf rect {
+    fill: yellow;
+    stroke: #666;
+}
+.wall rect {
+    fill: grey;
+}
+svg {
+    background-color: grey;
+    overflow: visible;
+}
+.register rect {
+    fill: pink;
+    stroke: #666;
+}
+text {
+    alignment-baseline: before-edge;
+    fill: green;
+    overflow: visible;
+}
+.path {
+    fill: green;
 }
