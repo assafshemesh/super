@@ -48,7 +48,15 @@ console.log('node-static running at %s:%d', process.env.IP, port);
 
 function handle_json(req, res) {
     res.writeHead(200, {
-        'Content-Type': 'text/plain'
+        'Content-Type': 'application/json'
     });
-    res.end('Hello World from Cloud9\n');
+    
+    var url = require('url').parse(req.url, true);
+    if (url.pathname === "/login")
+    {
+        var login = url.query.email === 'shemesh.assaf@gmail.com';
+        res.end(JSON.stringify(login));
+    }
+    else    
+        res.end('Hello World from Cloud9\n');
 }

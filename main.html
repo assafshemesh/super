@@ -10,7 +10,6 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.2.2/d3.v3.min.js"></script>
-        
         <script src="js/data/data.js"></script>
         <script src="js/data/products.js"></script>
         <script src="js/Dijkstra.js"></script>
@@ -41,13 +40,13 @@
                 <!--/.nav-collapse -->
             </div>
         </div>
+        <span id="signinButton">
+            <span class="g-signin" data-callback="signinCallback" data-clientid="378680909907.apps.googleusercontent.com"
+            data-cookiepolicy="single_host_origin" data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-scope="https://www.googleapis.com/auth/userinfo.email"></span>
+        </span>
         <div id="home">
-            
-                
-                <div id="maindiv" id="home" style="overflow: scroll;"></div>
-                
-                
-            
+            <div id="maindiv" id="home" style="overflow: scroll;"></div>
         </div>
         <div class="container" id="about">
             <div class="starter-template">
@@ -69,13 +68,13 @@
                 var $navbar = $('.navbar-toggle');
                 if ($navbar.is(':visible')) $navbar.click();
             });
-            
+
             var $window = $(window);
-            $(function(){
-                $('#maindiv').height($window.height()-50);
+            $(function() {
+                $('#maindiv').height($window.height() - 50);
             });
-            $(window).resize(function(){
-                $('#maindiv').height($window.height()-50);
+            $(window).resize(function() {
+                $('#maindiv').height($window.height() - 50);
             });
 
 
@@ -203,6 +202,53 @@
                     return (map[d].y + .5) * size;
                 }).attr("r", size / 8).attr("class", "path");
             }
+
+            function signinCallback(authResult) {
+                if (authResult['access_token']) {
+                    // Successfully authorized
+                    // Hide the sign-in button now that the user is authorized, for example:
+                    document.getElementById('signinButton').setAttribute('style', 'display: none');
+                    getEmail();
+
+                    function getEmail() {
+                        // Load the oauth2 libraries to enable the userinfo methods.
+                        gapi.client.load('oauth2', 'v2', function() {
+                            var request = gapi.client.oauth2.userinfo.get();
+                            request.execute(getEmailCallback);
+                        });
+                    }
+
+                    function getEmailCallback(obj) {
+                        $.ajax({
+                            type: "GET",
+                            url: "login?email=" + obj['email'],
+                            dataType: "json",
+                            success: function (data)
+                            {
+                                var d = data;     
+                            }
+                        });                        
+                    }
+                }
+                else if (authResult['error']) {
+                    // There was an error.
+                    // Possible error codes:
+                    //   "access_denied" - User denied access to your app
+                    //   "immediate_failed" - Could not automatically log in the user
+                    // console.log('There was an error: ' + authResult['error']);
+                }
+            }
+        </script>
+        <!-- Place this asynchronous JavaScript just before your </body> tag -->
+        <script type="text/javascript">
+            (function() {
+                var po = document.createElement('script');
+                po.type = 'text/javascript';
+                po.async = true;
+                po.src = 'https://apis.google.com/js/client:plusone.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(po, s);
+            })();
         </script>
     </body>
 
