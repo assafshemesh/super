@@ -46,7 +46,7 @@
             data-scope="https://www.googleapis.com/auth/userinfo.email"></span>
         </span>
         <div id="home">
-            <div id="maindiv" id="home" style="overflow: scroll;"></div>
+            <div id="maindiv" id="home" style="overflow: scroll;" class="hide"></div>
         </div>
         <div class="container" id="about">
             <div class="starter-template">
@@ -207,7 +207,9 @@
                 if (authResult['access_token']) {
                     // Successfully authorized
                     // Hide the sign-in button now that the user is authorized, for example:
-                    document.getElementById('signinButton').setAttribute('style', 'display: none');
+                    
+                    
+                    //document.getElementById('signinButton').setAttribute('style', 'display: none');
                     getEmail();
 
                     function getEmail() {
@@ -225,7 +227,12 @@
                             dataType: "json",
                             success: function (data)
                             {
-                                var d = data;     
+                                if (data)
+                                {
+                                    $('#maindiv').removeClass('hide');
+                                    $('#signinButton').hide();
+                                }
+                                //var d = data;     
                             }
                         });                        
                     }
