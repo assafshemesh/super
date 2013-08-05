@@ -210,7 +210,7 @@
                     
                     
                     //document.getElementById('signinButton').setAttribute('style', 'display: none');
-                    getEmail();
+                    
 
                     function getEmail() {
                         // Load the oauth2 libraries to enable the userinfo methods.
@@ -236,6 +236,9 @@
                             }
                         });                        
                     }
+                    
+                    getEmail();
+                    
                 }
                 else if (authResult['error']) {
                     // There was an error.
